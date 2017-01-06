@@ -1,13 +1,11 @@
 require('styles/App.css');
-
 import React from 'react';
+import GameBoard from '../containers/GameBoard';
 
 class AppComponent extends React.Component {
   render() {
     return (
-      <div className="index">
-       Stuff goes here
-      </div>
+      <GameBoard />
     );
   }
 }
