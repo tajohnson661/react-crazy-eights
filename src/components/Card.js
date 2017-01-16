@@ -2,52 +2,87 @@ import React from 'react';
 
 
 export default (props) => {
-  if (props.showFace) {
-
-    const { suitClass, suitText } = getSuitPaintInfoFromSuit(props.suit);
-    const { faceClass, faceText } = getFacePaintInfoFromFace(props.face);
-    const classText = `pCard ${faceClass} ${suitClass}`;
-
+  if (props.currentSuit) {
+    const {suitText, suitColor} = getSuitPaintInfoFromSuit(props.currentSuit);
+    const divStyle = {
+      color: suitColor
+    };
     return (
-      <div className="player-card">
-
-        <div className={'pointer ' + classText}>
-          <span className="rank">{faceText}</span>
-          <span className="suit">{suitText}</span>
-        </div>
+      <div className="current-suit" style={divStyle}>
+        {suitText}
       </div>
     )
   }
+  else if (props.showFace) {
+
+    const { suitClass, suitText } = getSuitPaintInfoFromSuit(props.card.suit);
+    const { faceClass, faceText } = getFacePaintInfoFromFace(props.card.face);
+    const classText = `pCard ${faceClass} ${suitClass}`;
+
+    if (props.clickable) {
+      return (
+        <div className="player-card" onClick={() => props.onCardClick(props.card)}>
+          <div className={'pointer ' + classText}>
+            <span className="rank">{faceText}</span>
+            <span className="suit">{suitText}</span>
+          </div>
+        </div>
+      )
+    }
+    else {
+      return (
+        <div className="player-card">
+          <div className={classText}>
+            <span className="rank">{faceText}</span>
+            <span className="suit">{suitText}</span>
+          </div>
+        </div>
+      )
+    }
+  }
   else {
-    return (
-      <div className="pCard back test-style">*</div>
-    )
+    if (props.clickable) {
+      return (
+        <div className="pCard back pointer" onClick={() => props.onCardClick(props.card)}>*</div>
+      )
+    }
+    else {
+      return (
+        <div className="pCard back">*</div>
+      )
+
+    }
   }
 }
 
 function getSuitPaintInfoFromSuit(suit) {
 
-  let suitClass, suitText;
+  let suitClass, suitText, suitColor;
 
   if (suit === 'Hearts') {
       suitClass = 'hearts';
       suitText = '♥';
+      suitColor = 'red';
   }
   else if (suit === 'Diamonds') {
     suitClass = 'diams';
     suitText = '♦';
+    suitColor = 'red';
   }
   else if (suit === 'Spades') {
     suitClass = 'spades';
     suitText = '♠';
+    suitColor = 'black';
   }
   else {
     suitClass = 'clubs';
     suitText = '♣';
+    suitColor = 'black';
   }
   return {
     suitClass
     , suitText
+    , suitColor
   };
 }
 

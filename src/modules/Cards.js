@@ -12,18 +12,18 @@ const suits = ['Hearts', 'Clubs', 'Diamonds', 'Spades'];
 
 
 // Create a deck of cards.
-export function initialDeck() {
+export const initialDeck = () => {
   return allCards(faces, suits);
-}
+};
 
 // Shuffle a deck of cards
-export function shuffleDeck(deck) {
+export const shuffleDeck = deck => {
    return _.sortBy(deck.map(addSortIndex), 'sortIndex').map(removeSortIndex);
-}
+};
 
 // Deal a deck of cards by returning on object containing hands for the dealer, player.  Also
 // create an initial discard pile with one card.
-export function dealCards(deck) {
+export const dealCards = deck => {
   const playerHand = deck.slice(0, 8);
   let tempDeck = _.drop(deck, 8);
   const dealerHand = tempDeck.slice(0, 8);
@@ -37,9 +37,9 @@ export function dealCards(deck) {
     , discardPile
     , remainingDeck
   }
-}
+};
 
-export function getCurrentSuitFromDiscard(deck) {
+export const getCurrentSuitFromDiscard = deck => {
   let currentSuit = 'Hearts';
   if (deck) {
     const firstCard = deck[0];
@@ -48,37 +48,76 @@ export function getCurrentSuitFromDiscard(deck) {
     }
   }
   return currentSuit;
-}
+};
 
-function addSortIndex(card) {
+const addSortIndex = card => {
   return { ...card, sortIndex : Math.floor(Math.random()*101) }
-}
+};
 
-function removeSortIndex({suit, face}) {
+const removeSortIndex = ({suit, face}) => {
   return {
     suit, face
   }
-}
+};
 
-function allCards(faces, suits) {
+const allCards = (faces, suits) => {
   return _.flatten(listsToObjList(faces, suits));
-}
+};
 
-function listsToObjList(faces, suits) {
+const listsToObjList = (faces, suits) => {
   return suits.map(familyMap(faces));
-}
+};
 
-function familyMap(faces) {
-  return function(aSuit) {
+const familyMap = faces => {
+  return aSuit => {
     return faces.map(getTuple(aSuit));
   }
-}
+};
 
-function getTuple(aSuit) {
-  return function(aFace) {
+const getTuple = aSuit => {
+  return aFace => {
     return {
       suit: aSuit
       , face: aFace
     }
+  }
+};
+
+export const isCardPlayable = (card, discardPile, currentSuit) => {
+  const topCard = discardPile[0];
+  if (!topCard || !card) {
+    return false;
+  }
+  else if (card.face === 8) {
+      return true;
+  }
+  else if (card.face === topCard.face) {
+    return true;
+  }
+  else if (card.suit === currentSuit) {
+    return true;
+  }
+  return false;
+};
+
+export const toFullString = card => {
+  return (toFaceName(card.face) + ' of ' + card.suit);
+}
+
+const toFaceName = face => {
+  if (face === 1) {
+    return 'Ace'
+  }
+  else if (face === 11) {
+    return 'Jack'
+  }
+  else if (face === 12) {
+    return 'Queen'
+  }
+  else if (face === 13) {
+    return 'King'
+  }
+  else {
+    return face;
   }
 }
