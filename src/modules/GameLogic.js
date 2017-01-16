@@ -148,13 +148,29 @@ const dealerDraws = props => {
 };
 
 const findDealerCardToPlay = (dealerHand, discardPile, currentSuit) => {
-  const possiblePlays = dealerHand.filter(isCardPlayableFunc(discardPile, currentSuit));
+  let possiblePlays = dealerHand.filter(isCardPlayableFunc(discardPile, currentSuit));
 
   if (!possiblePlays || possiblePlays.length === 0) {
     return null;
   }
   else {
-    // TODO: Play 8's last
+    // sort to play 8's last
+    // ** This is mutated.
+    possiblePlays.sort((card1, card2) => {
+      if (card1.face === 8 && card2.face === 8) {
+        return 0;
+      }
+      else if (card1.face === 8) {
+        return 1;
+      }
+      else if (card2.face === 8) {
+        return -1;
+      }
+      else {
+        return 0;
+      }
+    });
+
     return possiblePlays[0];
   }
 };
