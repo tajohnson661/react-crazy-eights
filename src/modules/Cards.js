@@ -100,9 +100,36 @@ export const isCardPlayable = (card, discardPile, currentSuit) => {
   return false;
 };
 
+export const getMostProlificSuit = deck => {
+  // count each suit (reduce)
+  const initial = {
+    Hearts : 0
+    , Clubs : 0
+    , Spades : 0
+    , Diamonds : 0
+  };
+  const final = deck.reduce(addToCount, initial);
+  const finalAsArray = Object.keys(final).map(function(key) {
+    return {
+      suit : key
+      , count : final[key]
+    }
+  });
+  const sortedFinal = _.sortBy(finalAsArray, 'count').reverse();
+  return sortedFinal[0].suit;
+};
+
+const addToCount = (current, card) => {
+  let data = {
+    ... current
+  };
+  data[card.suit] = current[card.suit] + 1;
+  return data;
+};
+
 export const toFullString = card => {
   return (toFaceName(card.face) + ' of ' + card.suit);
-}
+};
 
 const toFaceName = face => {
   if (face === 1) {
@@ -120,4 +147,4 @@ const toFaceName = face => {
   else {
     return face;
   }
-}
+};

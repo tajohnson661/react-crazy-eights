@@ -71,7 +71,6 @@ const playerPlaysCard = (card, props) => {
 
 const dealerPlays = component => {
   const {game} = component.props;
-  console.log('dealerPlays.  Top of discard pile is', game.discardPile[0]);
 
   if (game.playerHand.length === 0) {
     component.props.playerWins();
@@ -80,7 +79,6 @@ const dealerPlays = component => {
     const card = findDealerCardToPlay(game.dealerHand, game.discardPile, game.currentSuit);
     if (!card) {
       // draw a card
-      console.log('dealer needs to draw');
       dealerDraws(component.props);
       setTimeout(() => {
         // try again to play.  component will have changed.
@@ -95,7 +93,7 @@ const dealerPlays = component => {
 
 const dealerPlaysCard = (props, card) => {
   const {game} = props;
-  
+
   // remove card from dealer hand
   const newDealerHand = game.dealerHand.filter(function (el) {
     return !_.isEqual(el, card)
@@ -109,10 +107,7 @@ const dealerPlaysCard = (props, card) => {
   // get most prolific suit if it's an 8
   let newCurrentSuit;
   if (card.face === 8) {
-    // TODO: mostProlificSuit
-    //const mostProlificSuit = Cards.getMostProlificSuit(newDealerHand);
-    // TODO: Add to message that dealer changed suits.
-    newCurrentSuit = 'Hearts';
+    newCurrentSuit = Cards.getMostProlificSuit(newDealerHand);
     newMessage = message + '... New suit: ' + newCurrentSuit;
   }
   else {
