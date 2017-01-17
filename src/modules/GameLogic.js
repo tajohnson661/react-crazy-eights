@@ -25,18 +25,21 @@ export const playerDraws = (component) => {
   const firstCard = game.shuffledDeck[0];
   if (firstCard) {
     const newPlayerHand = [firstCard].concat(game.playerHand);
-    const newShuffledDeck = game.shuffledDeck.slice(1, game.shuffledDeck.length);
-    // TODO: If new deck is empty, regenerate it
+    let newShuffledDeck = game.shuffledDeck.slice(1, game.shuffledDeck.length);
+    let newDiscardPile = game.discardPile;
+
+    // If deck is empty, regenerate it from discard Pile
+    if (!newShuffledDeck || newShuffledDeck.length === 0) {
+      newDiscardPile = [game.discardPile[0]];
+      newShuffledDeck = Cards.shuffleDeck(game.discardPile.slice(1, game.discardPile.length));
+    }
     // send that ball of data as new state
     component.props.playerDraws({
       shuffledDeck : newShuffledDeck
       , playerHand : newPlayerHand
+      , discardPile : newDiscardPile
       , message : 'You drew the ' + Cards.toFullString(firstCard)
     });
-
-  }
-  else {
-    // TODO: Uh oh... out of cards
   }
 
 
