@@ -6,6 +6,7 @@ export const PLAYER_WINS = 'PLAYER_WINS';
 export const DEALER_DRAWS = 'DEALER_DRAWS';
 export const PLAYER_DRAWS = 'PLAYER_DRAWS';
 export const DEALER_PLAYED = 'DEALER_PLAYED';
+export const DEALER_WINS = 'DEALER_WINS';
 
 // Action creator returns action object
 export function startGame() {
@@ -62,5 +63,12 @@ export function playerDraws(data) {
   return {
     type : PLAYER_DRAWS
     , payload : data
+  }
+}
+
+export function dealerWins() {
+  return {
+    type : DEALER_WINS
+    , payload : null
   }
 }
