@@ -18,10 +18,32 @@ export const playCard = (card, component) => {
   }
 };
 
-export const playerDraws = (component) => {
+const dealerPlays = component => {
   const {game} = component.props;
 
-  // Move top of remainingDeck to dealer.
+  if (game.playerHand.length === 0) {
+    component.props.playerWins();
+  }
+  else {
+    const card = findDealerCardToPlay(game.dealerHand, game.discardPile, game.currentSuit);
+    if (!card) {
+      // draw a card
+      dealerDraws(component.props);
+      setTimeout(() => {
+        // try again to play.  component will have changed.
+        dealerPlays(component);
+      }, 0);
+    }
+    else {
+      dealerPlaysCard(component.props, card);
+    }
+  }
+};
+
+export const playerDraws = props => {
+  const {game} = props;
+
+  // Move top of remainingDeck to player.
   const firstCard = game.shuffledDeck[0];
   if (firstCard) {
     const newPlayerHand = [firstCard].concat(game.playerHand);
@@ -34,15 +56,41 @@ export const playerDraws = (component) => {
       newShuffledDeck = Cards.shuffleDeck(game.discardPile.slice(1, game.discardPile.length));
     }
     // send that ball of data as new state
-    component.props.playerDraws({
+    props.playerDraws({
       shuffledDeck : newShuffledDeck
       , playerHand : newPlayerHand
       , discardPile : newDiscardPile
       , message : 'You drew the ' + Cards.toFullString(firstCard)
     });
   }
+};
 
+const dealerDraws = props => {
+  const {game} = props;
 
+  // Move top of remainingDeck to dealer.
+  const firstCard = game.shuffledDeck[0];
+  if (firstCard) {
+    const newDealerHand = [firstCard].concat(game.dealerHand);
+    let newShuffledDeck = game.shuffledDeck.slice(1, game.shuffledDeck.length);
+    let newDiscardPile = game.discardPile;
+
+    // If deck is empty, regenerate it from discard Pile
+    if (!newShuffledDeck || newShuffledDeck.length === 0) {
+      newDiscardPile = [game.discardPile[0]];
+      newShuffledDeck = Cards.shuffleDeck(game.discardPile.slice(1, game.discardPile.length));
+    }
+
+    // send that ball of data as new state
+    props.dealerDraws({
+      shuffledDeck: newShuffledDeck
+      , dealerHand: newDealerHand
+      , discardPile : newDiscardPile
+    });
+  }
+  else {
+    // TODO: Uh oh... out of cards. Yes, this could happen
+  }
 };
 
 const playerPlaysCard = (card, props) => {
@@ -73,28 +121,6 @@ const playerPlaysCard = (card, props) => {
   });
 };
 
-const dealerPlays = component => {
-  const {game} = component.props;
-
-  if (game.playerHand.length === 0) {
-    component.props.playerWins();
-  }
-  else {
-    const card = findDealerCardToPlay(game.dealerHand, game.discardPile, game.currentSuit);
-    if (!card) {
-      // draw a card
-      dealerDraws(component.props);
-      setTimeout(() => {
-        // try again to play.  component will have changed.
-        dealerPlays(component);
-      }, 0);
-    }
-    else {
-      dealerPlaysCard(component.props, card);
-    }
-  }
-};
-
 const dealerPlaysCard = (props, card) => {
   const {game} = props;
 
@@ -102,52 +128,34 @@ const dealerPlaysCard = (props, card) => {
   const newDealerHand = game.dealerHand.filter(function (el) {
     return !_.isEqual(el, card)
   });
-  // add removed card to top/front of discard pile
-  const newDiscardPile = [card].concat(game.discardPile);
-
-  const message = 'Dealer plays the ' + Cards.toFullString(card);
-  let newMessage = message;
-
-  // get most prolific suit if it's an 8
-  let newCurrentSuit;
-  if (card.face === 8) {
-    newCurrentSuit = Cards.getMostProlificSuit(newDealerHand);
-    newMessage = message + '... New suit: ' + newCurrentSuit;
+  if (!newDealerHand || newDealerHand.length === 0) {
+    props.dealerWins();
   }
   else {
-    newCurrentSuit = card.suit;
-  }
+    // add removed card to top/front of discard pile
+    const newDiscardPile = [card].concat(game.discardPile);
+
+    const message = 'Dealer plays the ' + Cards.toFullString(card);
+    let newMessage = message;
+
+    // get most prolific suit if it's an 8
+    let newCurrentSuit;
+    if (card.face === 8) {
+      newCurrentSuit = Cards.getMostProlificSuit(newDealerHand);
+      newMessage = message + '... New suit: ' + newCurrentSuit;
+    }
+    else {
+      newCurrentSuit = card.suit;
+    }
 
 
     // send that ball of data as new state
-  props.dealerPlayed({
-    currentSuit: newCurrentSuit
-    , dealerHand: newDealerHand
-    , discardPile: newDiscardPile
-    , message: newMessage
-  });
-
-};
-
-const dealerDraws = props => {
-  const {game} = props;
-
-  // Move top of remainingDeck to dealer.
-  const firstCard = game.shuffledDeck[0];
-  if (firstCard) {
-    const newDealerHand = [firstCard].concat(game.dealerHand);
-    const newShuffledDeck = game.shuffledDeck.slice(1, game.shuffledDeck.length);
-    // TODO: If new deck is empty, regenerate it from discardPile
-
-    // send that ball of data as new state
-    props.dealerDraws({
-      shuffledDeck: newShuffledDeck
+    props.dealerPlayed({
+      currentSuit: newCurrentSuit
       , dealerHand: newDealerHand
+      , discardPile: newDiscardPile
+      , message: newMessage
     });
-
-  }
-  else {
-    // TODO: Uh oh... out of cards
   }
 };
 

@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Card from '../components/Card';
 import {startGame, playerPlayed, setMessage, dealerPlays, playerWins, dealerDraws, playerDraws,
-        dealerPlayed} from '../actions';
+        dealerPlayed, dealerWins} from '../actions';
 import * as GameLogic from '../modules/GameLogic';
 
 import _ from 'lodash';
@@ -25,7 +25,7 @@ class GameBoard extends Component {
   }
 
   onDrawPileClick() {
-    GameLogic.playerDraws(this);
+    GameLogic.playerDraws(this.props);
   }
 
   paintCard(showFace, clickable) {
@@ -204,7 +204,7 @@ class GameBoard extends Component {
 
 const mapDispatchToProps = dispatch => {
   return bindActionCreators({startGame, setMessage, playerPlayed, dealerPlays, playerWins,
-                            dealerDraws, playerDraws, dealerPlayed}, dispatch);
+                            dealerDraws, playerDraws, dealerPlayed, dealerWins}, dispatch);
 };
 
 const mapStateToProps = ({game}) => {
