@@ -47,6 +47,7 @@ export default function (state = initialState, action) {
         ... state
         , shuffledDeck: action.payload.shuffledDeck
         , playerHand: action.payload.playerHand
+        , message: action.payload.message
       };
 
     case PLAYER_PLAYED:

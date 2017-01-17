@@ -6,6 +6,8 @@ import {startGame, playerPlayed, setMessage, dealerPlays, playerWins, dealerDraw
         dealerPlayed} from '../actions';
 import * as GameLogic from '../modules/GameLogic';
 
+import _ from 'lodash';
+
 // TODO: Write tests
 class GameBoard extends Component {
 
@@ -54,10 +56,33 @@ class GameBoard extends Component {
     )
   }
 
+  addSortOrder(card) {
+    let sortOrder;
+    if (card.suit === 'Hearts') {
+      sortOrder = 1;
+    }
+    else if (card.suit === 'Clubs') {
+      sortOrder = 2;
+    }
+    else if (card.suit === 'Diamonds') {
+      sortOrder = 3;
+    }
+    else {
+      sortOrder = 4;
+    }
+    return {
+      ... card
+      , sortOrder
+    }
+  }
+
+  removeSortOrder({suit, face}) {
+    return {suit, face}
+  }
+
   renderPlayerHand() {
 
-    // TODO: sort this
-    const sortedHand = this.props.game.playerHand;
+    const sortedHand =  _.sortBy(this.props.game.playerHand.map(this.addSortOrder), ['sortOrder', 'face']).reverse().map(this.removeSortOrder);
 
     return (
       <div>

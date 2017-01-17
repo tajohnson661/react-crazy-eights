@@ -29,8 +29,9 @@ export const playerDraws = (component) => {
     // TODO: If new deck is empty, regenerate it
     // send that ball of data as new state
     component.props.playerDraws({
-      shuffledDeck: newShuffledDeck
-      , playerHand: newPlayerHand
+      shuffledDeck : newShuffledDeck
+      , playerHand : newPlayerHand
+      , message : 'You drew the ' + Cards.toFullString(firstCard)
     });
 
   }
