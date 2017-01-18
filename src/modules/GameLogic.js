@@ -6,19 +6,21 @@ export const playCard = (card, component) => {
   const {game} = component.props;
 
   if (Cards.isCardPlayable(card, game.discardPile, game.currentSuit)) {
-    playerPlaysCard(card, component.props);
-    setTimeout(() => {
-      // TODO: yucky non-functional stuff... component's props will have changed, so grab them
-      // again to use for the dealer play.
-      dealerPlays(component);
-    }, 0);
+    playerPlaysCard(card, component);
+    if (card.face != 8) {
+      setTimeout(() => {
+        // TODO: yucky non-functional stuff... component's props will have changed, so grab them
+        // again to use for the dealer play.
+        dealerPlays(component);
+      }, 0);
+    }
   }
   else {
     component.props.setMessage('You can\'t play that card');
   }
 };
 
-const dealerPlays = component => {
+export const dealerPlays = component => {
   const {game} = component.props;
 
   if (game.playerHand.length === 0) {
@@ -88,13 +90,10 @@ const dealerDraws = props => {
       , discardPile : newDiscardPile
     });
   }
-  else {
-    // TODO: Uh oh... out of cards. Yes, this could happen
-  }
 };
 
-const playerPlaysCard = (card, props) => {
-  const {game} = props;
+const playerPlaysCard = (card, component) => {
+  const {game} = component.props;
 
   // new player hand <- remove card from player hand
   const newPlayerHand = game.playerHand.filter(function (el) {
@@ -104,20 +103,18 @@ const playerPlaysCard = (card, props) => {
   const newDiscardPile = [card].concat(game.discardPile);
 
   // if card is an 8, ask for suit
-  let newCurrentSuit = game.currentSuit;
+  let newCurrentSuit = card.suit;
+  let showDialog = false;
   if (card.face === 8) {
-    // TODO: Modal dialog to change suit.
-    newCurrentSuit = 'Hearts';
-  }
-  else {
-    newCurrentSuit = card.suit;
+    showDialog = true;
   }
   // send that ball of data as new state
-  props.playerPlayed({
+  component.props.playerPlayed({
     currentSuit: newCurrentSuit
     , playerHand: newPlayerHand
     , discardPile: newDiscardPile
     , message: ''
+    , showDialog: showDialog
   });
 };
 

@@ -1,5 +1,5 @@
 import {START_GAME, SET_MESSAGE, PLAYER_PLAYED, PLAYER_WINS, DEALER_DRAWS, PLAYER_DRAWS,
-        DEALER_PLAYED, DEALER_WINS} from '../actions/index';
+        DEALER_PLAYED, DEALER_WINS, SET_SUIT} from '../actions/index';
 import {initialDeck, shuffleDeck, dealCards, getCurrentSuitFromDiscard} from '../modules/Cards';
 
 const initialState = {
@@ -59,6 +59,7 @@ export default function (state = initialState, action) {
         , playerHand: action.payload.playerHand
         , discardPile: action.payload.discardPile
         , currentSuit: action.payload.currentSuit
+        , showDialog: action.payload.showDialog
       };
 
     case DEALER_PLAYED:
@@ -82,8 +83,14 @@ export default function (state = initialState, action) {
         ... state
         , message: 'Dealer wins!'
         , inProgress: false
-      }
+      };
 
+    case SET_SUIT:
+      return {
+        ... state
+        , currentSuit: action.payload
+        , showDialog: false
+      };
   }
   return state;
 }

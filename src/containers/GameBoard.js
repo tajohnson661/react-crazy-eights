@@ -2,19 +2,17 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Card from '../components/Card';
-import {startGame, playerPlayed, setMessage, dealerPlays, playerWins, dealerDraws, playerDraws,
-        dealerPlayed, dealerWins} from '../actions';
+import {
+  startGame, playerPlayed, setMessage, dealerPlays, playerWins, dealerDraws, playerDraws,
+  dealerPlayed, dealerWins, setSuitAndClose
+} from '../actions';
 import * as GameLogic from '../modules/GameLogic';
+import ReactModal from 'react-modal';
 
 import _ from 'lodash';
 
 // TODO: Write tests
 class GameBoard extends Component {
-
-  // The constructor is used to initialize the state
-  constructor(props) {
-    super(props);
-  }
 
   onPlayButton() {
     this.props.startGame();
@@ -82,7 +80,7 @@ class GameBoard extends Component {
 
   renderPlayerHand() {
 
-    const sortedHand =  _.sortBy(this.props.game.playerHand.map(this.addSortOrder), ['sortOrder', 'face']).reverse().map(this.removeSortOrder);
+    const sortedHand = _.sortBy(this.props.game.playerHand.map(this.addSortOrder), ['sortOrder', 'face']).reverse().map(this.removeSortOrder);
 
     return (
       <div>
@@ -167,6 +165,45 @@ class GameBoard extends Component {
     )
   }
 
+  renderDialog(state) {
+    return (
+      <ReactModal
+        isOpen={state.showDialog}
+        contentLabel="Suit Chooser"
+        shouldCloseOnOverlayClick={false}
+      >
+
+        <h2 ref="subtitle">Pick a suit</h2>
+        <div>
+          <button onClick={this.setHearts.bind(this)}>Hearts</button>
+          <button onClick={this.setSpades.bind(this)}>Spades</button>
+          <button onClick={this.setDiamonds.bind(this)}>Diamonds</button>
+          <button onClick={this.setClubs.bind(this)}>Clubs</button>
+        </div>
+      </ReactModal>
+    )
+  }
+
+  setHearts() {
+    this.closeModal('Hearts');
+  }
+  setClubs() {
+    this.closeModal('Clubs');
+  }
+  setSpades() {
+    this.closeModal('Spades');
+  }
+  setDiamonds() {
+    this.closeModal('Diamonds');
+  }
+
+  closeModal(suit) {
+    this.props.setSuitAndClose(suit);
+    setTimeout(() => {
+      GameLogic.dealerPlays(this);
+    }, 0);
+  }
+
 
   render() {
     const state = this.props.game;
@@ -174,6 +211,9 @@ class GameBoard extends Component {
     if (state.inProgress) {
       return (
         <div className="container playingCards simpleCards">
+          <div className="on-top">
+            {this.renderDialog(state)}
+          </div>
           <div>
             {this.renderDealerHand()}
           </div>
@@ -201,10 +241,11 @@ class GameBoard extends Component {
   }
 }
 
-
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({startGame, setMessage, playerPlayed, dealerPlays, playerWins,
-                            dealerDraws, playerDraws, dealerPlayed, dealerWins}, dispatch);
+  return bindActionCreators({
+    startGame, setMessage, playerPlayed, dealerPlays, playerWins,
+    dealerDraws, playerDraws, dealerPlayed, dealerWins, setSuitAndClose
+  }, dispatch);
 };
 
 const mapStateToProps = ({game}) => {

@@ -7,6 +7,7 @@ export const DEALER_DRAWS = 'DEALER_DRAWS';
 export const PLAYER_DRAWS = 'PLAYER_DRAWS';
 export const DEALER_PLAYED = 'DEALER_PLAYED';
 export const DEALER_WINS = 'DEALER_WINS';
+export const SET_SUIT = 'SET_SUIT';
 
 // Action creator returns action object
 export function startGame() {
@@ -72,3 +73,12 @@ export function dealerWins() {
     , payload : null
   }
 }
+
+export function setSuitAndClose(suit) {
+  return {
+    type : SET_SUIT
+    , payload : suit
+  }
+}
+
+
