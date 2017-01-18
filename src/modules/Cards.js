@@ -60,7 +60,7 @@ const removeSortIndex = ({suit, face}) => {
   }
 };
 
-const allCards = (faces, suits) => {
+export const allCards = (faces, suits) => {
   return _.flatten(listsToObjList(faces, suits));
 };
 
