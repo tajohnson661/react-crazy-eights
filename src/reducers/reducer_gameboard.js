@@ -9,7 +9,7 @@ const initialState = {
   , discardPile: []
   , currentSuit: 'Hearts'
   , inProgress: false
-  , message: null
+  , message: 'Welcome to Crazy Eights'
   , showDialog: false
 };
 

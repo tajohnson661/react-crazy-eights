@@ -204,6 +204,23 @@ class GameBoard extends Component {
     }, 0);
   }
 
+  renderMessage(state) {
+    return (
+      <div className="row center">
+        <div className="col m3">
+        </div>
+        <div className="col s12 m6 grey lighten-3 message-area">
+          <h5>
+            {state.message}
+          </h5>
+        </div>
+        <div className="col m3">
+        </div>
+
+      </div>
+
+    )
+  }
 
   render() {
     const state = this.props.game;
@@ -221,7 +238,7 @@ class GameBoard extends Component {
             {this.renderMiddleSection(state)}
           </div>
           <div>
-            {state.message}
+            {this.renderMessage(state)}
           </div>
           <div>
             {this.renderPlayerHand()}
@@ -231,9 +248,9 @@ class GameBoard extends Component {
     }
     else {
       return (
-        <div>
-          <p>Ready to start? Click button to go</p>
-          <button onClick={this.onPlayButton.bind(this)}>Start game</button>
+        <div className="row center initial-screen">
+          {this.renderMessage(state)}
+          <button className="btn btn-large btn-success" onClick={this.onPlayButton.bind(this)}>Start game</button>
         </div>
       );
 
