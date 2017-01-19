@@ -23,18 +23,23 @@ npm start
 
 ### Tests:
 ```
-TBD
+npm test
+npm run test:watch
 ```
 ### Build & bundle for prod:
+There's some extra stuff in here from the generator for publishing that I didn't try, but this will give you a distributable ball of code...
+
 ```
-TBD
+npm run clean
+npm run dist
 ```
 
 ### Development Notes:
 
 * This application uses react and redux.  It was originally created in elm  [Elm home](http:/elm-lang.org).  Here's the repo for that... [Elm crazy eights](https://github.com/tajohnson661/elm-crazy-eights).  I tried to model my design decisions on what I did in elm, as this was an exercise in using the elm design process in react/redux.  Functional programming techniques are used when it makes sense.
+* I used [generator-react-webpack](https://github.com/react-webpack-generators/generator-react-webpack) to get started.  This uses webpack 1.x.
 * I used [CSS-Playing-Cards](http://selfthinker.github.com/CSS-Playing-Cards/) by Anika Henke <anika@selfthinker.org> as the starting point for the playing card CSS
-* The biggest design issue I've come across in this simple game is where to put the application logic.  I narrowed it down to three possibilities
+* The biggest design issue I've come across in this simple game relates to redux and where to put the application logic.  I narrowed it down to three possibilities (Currently, I'm using the third approach):
 	* Do the logic in the reducers.  Everything is generally synchronous, so this works, but seems a bit weird to separate out the game logic out into the reducers.
 	* Do the logic in the action creators.  Ok, but seems like the same problem as reducers, plus I don't have access to current state directly.
 	* Do the logic where I think it belongs... where all of the logic is.  The problem here is that if I want to do a couple of things in serial via different actions, the state in the props isn't updated between the first and second action.  I'm solving this by using setTimeout(, 0) to wait for the next tick to do the 2nd action.  This works, but feels clunky.
