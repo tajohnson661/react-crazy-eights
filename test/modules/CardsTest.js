@@ -5,22 +5,27 @@
 
 import * as Cards from '../../src/modules/Cards';
 import _ from 'lodash';
+import { List, Map, Range } from 'immutable';
 
-const faces = _.range(1, 4);
-const suits = ['Hearts', 'Clubs'];
-const initialDeck = [
-  {suit: 'Hearts', face: 1},
-  {suit: 'Hearts', face: 2},
-  {suit: 'Hearts', face: 3},
-  {suit: 'Clubs', face: 1},
-  {suit: 'Clubs', face: 2},
-  {suit: 'Clubs', face: 3}
-];
-const smallDeck = [{suit: 'Spades', face: 5}, {suit: 'Hearts', face: 3}, {suit: 'Spades', face: 11}];
-const testCard7ofHearts = {suit: 'Hearts', face: 7};
-const testCard8ofSpades = {suit: 'Spades', face: 8};
-const testCard9ofDiamonds = {suit: 'Diamonds', face: 9};
-const testCardQofClubs = {suit: 'Clubs', face: 12};
+const faces = Range(1, 4);
+const suits = List(['Hearts', 'Clubs']);
+const initialDeck = List([
+  Map({suit: 'Hearts', face: 1}),
+  Map({suit: 'Hearts', face: 2}),
+  Map({suit: 'Hearts', face: 3}),
+  Map({suit: 'Clubs', face: 1}),
+  Map({suit: 'Clubs', face: 2}),
+  Map({suit: 'Clubs', face: 3})
+]);
+const smallDeck = List([
+  Map({suit: 'Spades', face: 5}),
+  Map({suit: 'Hearts', face: 3}),
+  Map({suit: 'Spades', face: 11})
+]);
+const testCard7ofHearts = Map({suit: 'Hearts', face: 7});
+const testCard8ofSpades = Map({suit: 'Spades', face: 8});
+const testCard9ofDiamonds = Map({suit: 'Diamonds', face: 9});
+const testCardQofClubs = Map({suit: 'Clubs', face: 12});
 
 
 describe('Card module tests', function () {
@@ -29,7 +34,7 @@ describe('Card module tests', function () {
   });
 
   it('allCards should generate all cards', function () {
-    assert.deepEqual(Cards.allCards(faces, suits), initialDeck);
+    assert.deepEqual(Cards.allCards(faces, suits).toJS(), initialDeck.toJS());
   });
 
   it('isCardPlayable - 7 of hearts', function () {
@@ -45,7 +50,7 @@ describe('Card module tests', function () {
   });
 
   it('shuffleDeck returns array of cards', function () {
-    const shuffledDeck = Cards.shuffleDeck(smallDeck);
+    const shuffledDeck = Cards.shuffleDeck(initialDeck).toJS();
     expect(shuffledDeck[0]).to.have.all.keys('suit', 'face');
   });
 
@@ -54,15 +59,15 @@ describe('Card module tests', function () {
     const allHands = Cards.dealCards(initialDeck);
 
     it('dealCards has discardPile of size 1', function () {
-      expect(allHands.discardPile).to.have.lengthOf(1);
+      expect(allHands.get('discardPile').toJS()).to.have.lengthOf(1);
     });
 
     it('dealCards has playerHand of size 8', function () {
-      expect(allHands.playerHand).to.have.lengthOf(8);
+      expect(allHands.get('playerHand').toJS()).to.have.lengthOf(8);
     });
 
     it('dealCards has remainingHand of size 35', function () {
-      expect(allHands.remainingDeck).to.have.lengthOf(35);
+      expect(allHands.get('remainingDeck').toJS()).to.have.lengthOf(35);
     });
 
   });

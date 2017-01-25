@@ -38,6 +38,7 @@
     "eslint-plugin-react": "^6.0.0",
     "file-loader": "^0.9.0",
     "glob": "^7.0.0",
+    "immutable-devtools": "0.0.7",
     "isparta-instrumenter-loader": "^1.0.0",
     "karma": "^1.0.0",
     "karma-chai": "^0.1.0",

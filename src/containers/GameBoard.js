@@ -8,8 +8,7 @@ import {
 } from '../actions';
 import * as GameLogic from '../modules/GameLogic';
 import ReactModal from 'react-modal';
-
-import _ from 'lodash';
+import {Map} from 'immutable';
 
 // TODO: Write tests
 class GameBoard extends Component {
@@ -18,8 +17,8 @@ class GameBoard extends Component {
     this.props.startGame();
   }
 
-  onCardClick(card) {
-    GameLogic.playCard(card, this);
+  onCardClick(jsCard) {
+    GameLogic.playCard(Map(jsCard), this);
   }
 
   onDrawPileClick() {
@@ -30,11 +29,11 @@ class GameBoard extends Component {
     return function (card) {
       return (
         <Card
-          key={card.suit + card.face}
+          key={card.get('suit') + card.get('face')}
           showFace={showFace}
           clickable={clickable}
-          card={card}
-          onCardClick={card => this.onCardClick(card)}
+          card={card.toJS()}
+          onCardClick={jsCard => this.onCardClick(jsCard)}
           currentSuit={null}
         />
       )
@@ -48,39 +47,43 @@ class GameBoard extends Component {
           <h4 className="header col s12 orange-text">Dealer</h4>
         </div>
         <div className="row center">
-          {this.props.game.dealerHand.map(this.paintCard(false, false))}
+          {this.props.game.get('dealerHand').map(this.paintCard(false, false))}
         </div>
       </div>
     )
   }
 
-  addSortOrder(card) {
+  addSortIndex(card) {
     let sortOrder;
-    if (card.suit === 'Hearts') {
+    const suit = card.get('suit');
+
+    if (suit === 'Hearts') {
       sortOrder = 1;
     }
-    else if (card.suit === 'Clubs') {
+    else if (suit === 'Clubs') {
       sortOrder = 2;
     }
-    else if (card.suit === 'Diamonds') {
+    else if (suit === 'Diamonds') {
       sortOrder = 3;
     }
     else {
       sortOrder = 4;
     }
-    return {
-      ... card
-      , sortOrder
-    }
+    return card.set('sortOrder', sortOrder);
   }
 
-  removeSortOrder({suit, face}) {
-    return {suit, face}
+  removeSortIndex(card) {
+    return card.delete('sortOrder');
   }
 
   renderPlayerHand() {
 
-    const sortedHand = _.sortBy(this.props.game.playerHand.map(this.addSortOrder), ['sortOrder', 'face']).reverse().map(this.removeSortOrder);
+    //const sortedHand = _.sortBy(this.props.game.playerHand.map(this.addSortOrder), ['sortOrder', 'face']).reverse().map(this.removeSortOrder);
+    const sortedHand = this.props.game.get('playerHand')
+      .map(this.addSortIndex)
+      .sort(this.comparePlayerCard)
+      .reverse()
+      .map(this.removeSortIndex);
 
     return (
       <div>
@@ -92,6 +95,26 @@ class GameBoard extends Component {
         </div>
       </div>
     )
+  }
+
+  comparePlayerCard(card1, card2) {
+    if (card1.get('sortOrder') < card2.get('sortOrder')) {
+      return -1;
+    }
+    else if (card1.get('sortOrder') > card2.get('sortOrder')) {
+      return 1;
+    }
+    else {
+      if ((card1.get('face') < card2.get('face'))) {
+        return -1;
+      }
+      else if ((card1.get('face') > card2.get('face'))) {
+        return 1;
+      }
+      else {
+        return 0;
+      }
+    }
   }
 
   renderMiddleSection(state) {
@@ -121,7 +144,7 @@ class GameBoard extends Component {
   }
 
   renderDrawCard(state) {
-    if (state.shuffledDeck.length === 0) {
+    if (state.get('shuffledDeck').size === 0) {
       return null;
     }
     else {
@@ -138,14 +161,14 @@ class GameBoard extends Component {
   }
 
   renderDiscardPile(state) {
-    if (state.discardPile && state.discardPile[0]) {
-      const topCard = state.discardPile[0];
+    if (state.get('discardPile') && state.get('discardPile').first()) {
+      const topCard = state.get('discardPile').first();
       return (
         <div>
           <Card
             showFace={true}
             clickable={false}
-            card={topCard}
+            card={topCard.toJS()}
             currentSuit={null}
           />
         </div>
@@ -160,7 +183,7 @@ class GameBoard extends Component {
   renderCurrentSuit(state) {
     return (
       <Card
-        currentSuit={state.currentSuit}
+        currentSuit={state.get('currentSuit')}
       />
     )
   }
@@ -168,7 +191,7 @@ class GameBoard extends Component {
   renderDialog(state) {
     return (
       <ReactModal
-        isOpen={state.showDialog}
+        isOpen={state.get('showDialog')}
         contentLabel="Suit Chooser"
         shouldCloseOnOverlayClick={false}
       >
@@ -187,12 +210,15 @@ class GameBoard extends Component {
   setHearts() {
     this.closeModal('Hearts');
   }
+
   setClubs() {
     this.closeModal('Clubs');
   }
+
   setSpades() {
     this.closeModal('Spades');
   }
+
   setDiamonds() {
     this.closeModal('Diamonds');
   }
@@ -211,7 +237,7 @@ class GameBoard extends Component {
         </div>
         <div className="col s12 m6 grey lighten-3 message-area">
           <h5>
-            {state.message}
+            {state.get('message')}
           </h5>
         </div>
         <div className="col m3">
@@ -225,7 +251,7 @@ class GameBoard extends Component {
   render() {
     const state = this.props.game;
 
-    if (state.inProgress) {
+    if (state.get('inProgress')) {
       return (
         <div className="container playingCards simpleCards">
           <div className="on-top">

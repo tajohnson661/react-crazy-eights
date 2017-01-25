@@ -1,16 +1,16 @@
-import _ from 'lodash';
 import * as Cards from '../modules/Cards';
+import { List } from 'immutable';
+
 
 
 export const playCard = (card, component) => {
   const {game} = component.props;
 
-  if (Cards.isCardPlayable(card, game.discardPile, game.currentSuit)) {
+  if (Cards.isCardPlayable(card, game.get('discardPile'), game.get('currentSuit'))) {
     playerPlaysCard(card, component);
-    if (card.face != 8) {
+    if (card.get('face') != 8) {
       setTimeout(() => {
-        // TODO: yucky non-functional stuff... component's props will have changed, so grab them
-        // again to use for the dealer play.
+        // component's props will have changed, so grab them again to use for the dealer play.
         dealerPlays(component);
       }, 0);
     }
@@ -23,11 +23,11 @@ export const playCard = (card, component) => {
 export const dealerPlays = component => {
   const {game} = component.props;
 
-  if (game.playerHand.length === 0) {
+  if (game.get('playerHand').size === 0) {
     component.props.playerWins();
   }
   else {
-    const card = findDealerCardToPlay(game.dealerHand, game.discardPile, game.currentSuit);
+    const card = findDealerCardToPlay(game.get('dealerHand'), game.get('discardPile'), game.get('currentSuit'));
     if (!card) {
       // draw a card
       dealerDraws(component.props);
@@ -46,16 +46,16 @@ export const playerDraws = props => {
   const {game} = props;
 
   // Move top of remainingDeck to player.
-  const firstCard = game.shuffledDeck[0];
+  const firstCard = game.get('shuffledDeck').first();
   if (firstCard) {
-    const newPlayerHand = [firstCard].concat(game.playerHand);
-    let newShuffledDeck = game.shuffledDeck.slice(1, game.shuffledDeck.length);
-    let newDiscardPile = game.discardPile;
+    const newPlayerHand = game.get('playerHand').unshift(firstCard);
+    let newShuffledDeck = game.get('shuffledDeck').shift();
+    let newDiscardPile = game.get('discardPile');
 
     // If deck is empty, regenerate it from discard Pile
-    if (!newShuffledDeck || newShuffledDeck.length === 0) {
-      newDiscardPile = [game.discardPile[0]];
-      newShuffledDeck = Cards.shuffleDeck(game.discardPile.slice(1, game.discardPile.length));
+    if (!newShuffledDeck || newShuffledDeck.size === 0) {
+      newDiscardPile = List([game.get('discardPile').first()]);
+      newShuffledDeck = Cards.shuffleDeck(game.get('discardPile').shift());
     }
     // send that ball of data as new state
     props.playerDraws({
@@ -71,16 +71,16 @@ const dealerDraws = props => {
   const {game} = props;
 
   // Move top of remainingDeck to dealer.
-  const firstCard = game.shuffledDeck[0];
+  const firstCard = game.get('shuffledDeck').first();
   if (firstCard) {
-    const newDealerHand = [firstCard].concat(game.dealerHand);
-    let newShuffledDeck = game.shuffledDeck.slice(1, game.shuffledDeck.length);
-    let newDiscardPile = game.discardPile;
+    const newDealerHand = game.get('dealerHand').unshift(firstCard);
+    let newShuffledDeck = game.get('shuffledDeck').shift();
+    let newDiscardPile = game.get('discardPile');
 
     // If deck is empty, regenerate it from discard Pile
-    if (!newShuffledDeck || newShuffledDeck.length === 0) {
-      newDiscardPile = [game.discardPile[0]];
-      newShuffledDeck = Cards.shuffleDeck(game.discardPile.slice(1, game.discardPile.length));
+    if (!newShuffledDeck || newShuffledDeck.size === 0) {
+      newDiscardPile = List([game.get('discardPile').first()]);
+      newShuffledDeck = Cards.shuffleDeck(game.get('discardPile').shift());
     }
 
     // send that ball of data as new state
@@ -96,16 +96,16 @@ const playerPlaysCard = (card, component) => {
   const {game} = component.props;
 
   // new player hand <- remove card from player hand
-  const newPlayerHand = game.playerHand.filter(function (el) {
-    return !_.isEqual(el, card)
+  const newPlayerHand = game.get('playerHand').filter(function (el) {
+    return !el.equals(card)
   });
   // add removed card to top/front of discard pile
-  const newDiscardPile = [card].concat(game.discardPile);
+  const newDiscardPile = game.get('discardPile').unshift(card);
 
   // if card is an 8, ask for suit
-  let newCurrentSuit = card.suit;
+  let newCurrentSuit = card.get('suit');
   let showDialog = false;
-  if (card.face === 8) {
+  if (card.get('face') === 8) {
     showDialog = true;
   }
   // send that ball of data as new state
@@ -122,27 +122,27 @@ const dealerPlaysCard = (props, card) => {
   const {game} = props;
 
   // remove card from dealer hand
-  const newDealerHand = game.dealerHand.filter(function (el) {
-    return !_.isEqual(el, card)
+  const newDealerHand = game.get('dealerHand').filter(function (el) {
+    return !el.equals(card)
   });
-  if (!newDealerHand || newDealerHand.length === 0) {
+  if (!newDealerHand || newDealerHand.size === 0) {
     props.dealerWins();
   }
   else {
     // add removed card to top/front of discard pile
-    const newDiscardPile = [card].concat(game.discardPile);
+    const newDiscardPile = game.get('discardPile').unshift(card);
 
     const message = 'Dealer plays the ' + Cards.toFullString(card);
     let newMessage = message;
 
     // get most prolific suit if it's an 8
     let newCurrentSuit;
-    if (card.face === 8) {
+    if (card.get('face') === 8) {
       newCurrentSuit = Cards.getMostProlificSuit(newDealerHand);
       newMessage = message + '... New suit: ' + newCurrentSuit;
     }
     else {
-      newCurrentSuit = card.suit;
+      newCurrentSuit = card.get('suit');
     }
 
 
@@ -159,20 +159,19 @@ const dealerPlaysCard = (props, card) => {
 const findDealerCardToPlay = (dealerHand, discardPile, currentSuit) => {
   let possiblePlays = dealerHand.filter(isCardPlayableFunc(discardPile, currentSuit));
 
-  if (!possiblePlays || possiblePlays.length === 0) {
+  if (!possiblePlays || possiblePlays.size === 0) {
     return null;
   }
   else {
     // sort to play 8's last
-    // ** This is mutated.
-    possiblePlays.sort((card1, card2) => {
-      if (card1.face === 8 && card2.face === 8) {
+    const sortedPossiblePlays = possiblePlays.sort((card1, card2) => {
+      if (card1.get('face') === 8 && card2.get('face') === 8) {
         return 0;
       }
-      else if (card1.face === 8) {
+      else if (card1.get('face') === 8) {
         return 1;
       }
-      else if (card2.face === 8) {
+      else if (card2.get('face') === 8) {
         return -1;
       }
       else {
@@ -180,7 +179,7 @@ const findDealerCardToPlay = (dealerHand, discardPile, currentSuit) => {
       }
     });
 
-    return possiblePlays[0];
+    return sortedPossiblePlays.first();
   }
 };
 
