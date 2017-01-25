@@ -7,8 +7,10 @@ import {
   dealerPlayed, dealerWins, setSuitAndClose
 } from '../actions';
 import * as GameLogic from '../modules/GameLogic';
-import ReactModal from 'react-modal';
 import {Map} from 'immutable';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+
 
 // TODO: Write tests
 class GameBoard extends Component {
@@ -189,39 +191,56 @@ class GameBoard extends Component {
   }
 
   renderDialog(state) {
-    return (
-      <ReactModal
-        isOpen={state.get('showDialog')}
-        contentLabel="Suit Chooser"
-        shouldCloseOnOverlayClick={false}
-      >
+    const actions = [
+      <FlatButton
+        label="Hearts"
+        primary={true}
+        onTouchTap={this.setHearts}
+      />,
+      <FlatButton
+        label="Clubs"
+        primary={true}
+        onTouchTap={this.setClubs}
+      />,
+      <FlatButton
+        label="Spades"
+        primary={true}
+        onTouchTap={this.setSpades}
+      />,
+      <FlatButton
+        label="Diamonds"
+        primary={true}
+        onTouchTap={this.setDiamonds}
+      />
+    ];
 
-        <h2 ref="subtitle">Pick a suit</h2>
-        <div>
-          <button onClick={this.setHearts.bind(this)}>Hearts</button>
-          <button onClick={this.setSpades.bind(this)}>Spades</button>
-          <button onClick={this.setDiamonds.bind(this)}>Diamonds</button>
-          <button onClick={this.setClubs.bind(this)}>Clubs</button>
-        </div>
-      </ReactModal>
+    return (
+      <Dialog
+        title="Select a suit..."
+        actions={actions}
+        modal={true}
+        open={state.get('showDialog')}
+      >
+        You get to change the suit.  Have fun!
+      </Dialog>
     )
   }
 
-  setHearts() {
+  setHearts = () => {
     this.closeModal('Hearts');
-  }
+  };
 
-  setClubs() {
+  setClubs = () => {
     this.closeModal('Clubs');
-  }
+  };
 
-  setSpades() {
+  setSpades = () => {
     this.closeModal('Spades');
-  }
+  };
 
-  setDiamonds() {
+  setDiamonds = () => {
     this.closeModal('Diamonds');
-  }
+  };
 
   closeModal(suit) {
     this.props.setSuitAndClose(suit);

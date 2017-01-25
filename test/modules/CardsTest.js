@@ -4,7 +4,6 @@
 'use strict';
 
 import * as Cards from '../../src/modules/Cards';
-import _ from 'lodash';
 import { List, Map, Range } from 'immutable';
 
 const faces = Range(1, 4);
