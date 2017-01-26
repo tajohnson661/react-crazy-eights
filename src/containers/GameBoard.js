@@ -295,7 +295,7 @@ class GameBoard extends Component {
       return (
         <div className="row center initial-screen">
           {this.renderMessage(state)}
-          <button className="btn btn-large btn-success" onClick={this.onPlayButton.bind(this)}>Start game</button>
+          <button className="btn btn-large btn-success" onClick={this.onPlayButton.bind(this)}>Click to start</button>
         </div>
       );
 
