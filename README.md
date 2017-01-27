@@ -22,12 +22,15 @@ npm start
 
 
 ### Tests:
+A small number of tests are written for the Card module and for the reducers.  The reducers tests are mostly POC and not necessarily a complete set.
+
+Tests should be written for the game module.
+
 ```
 npm test
 npm run test:watch
 ```
 ### Build & bundle for prod:
-There's some extra stuff in here from the generator for publishing that I didn't try, but this will give you a distributable ball of code...
 
 ```
 npm run clean
@@ -36,7 +39,9 @@ npm run dist
 
 ### Development Notes:
 
-* This application uses react and redux.  It was originally created in elm  [Elm home](http:/elm-lang.org).  Here's the repo for that... [Elm crazy eights](https://github.com/tajohnson661/elm-crazy-eights).  I tried to model my design decisions on what I did in elm, as this was an exercise in using the elm design process in react/redux.  Functional programming techniques are used when it makes sense.
+* This application uses [React](https://facebook.github.io/react/) and [Redux](http://redux.js.org/).  It was originally created in [Elm](http:/elm-lang.org) as a learning exercise.  Here's the repo for that... [Elm crazy eights](https://github.com/tajohnson661/elm-crazy-eights).  I tried to model my design decisions on what I did in elm, as this was an exercise in using the elm design process in react/redux.  Functional programming techniques are used when it makes sense.
+* [Immutable](https://facebook.github.io/immutable-js/) is used for data structures for the Cards module and also for the redux state.
+* [Materialize](http://materializecss.com/) is used to provide the baseline CSS. [Material-UI](http://www.material-ui.com/#/) is used for the single modal dialog used to change suits
 * I used [generator-react-webpack](https://github.com/react-webpack-generators/generator-react-webpack) to get started.  This uses webpack 1.x.
 * I used [CSS-Playing-Cards](http://selfthinker.github.com/CSS-Playing-Cards/) by Anika Henke <anika@selfthinker.org> as the starting point for the playing card CSS
 * The biggest design issue I've come across in this simple game relates to redux and where to put the application logic.  I narrowed it down to three possibilities (Currently, I'm using the third approach):
